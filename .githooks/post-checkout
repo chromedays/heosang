@@ -1,0 +1,15 @@
+#!/bin/sh
+# `just setup` points core.hooksPath here. Git runs post-checkout after `git worktree add` with an all-zero previous
+# HEAD; only then is the engine submodule checked out (`just setup`). Ordinary branch switches are left alone.
+case "$1" in
+*[!0]*) exit 0 ;;
+esac
+
+# A failed setup must not fail the checkout: say what to run instead.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
+if command -v just >/dev/null 2>&1; then
+    just setup || echo "heosang: engine submodule setup failed; run \`just setup\` in this worktree" >&2
+else
+    echo "heosang: \`just\` not found; run \`git submodule update --init --recursive\` in this worktree" >&2
+fi
+exit 0
